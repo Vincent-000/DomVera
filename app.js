@@ -1,73 +1,73 @@
 const $ = selector => document.querySelector(selector);
 const $$ = selector => Array.from(document.querySelectorAll(selector));
 
-const STORAGE_KEY = 'realEstateAccounts';
-const CURRENT_USER_KEY = 'realEstateCurrentUser';
+let currentUser = null;
 
-const readJSON = (key, fallback) => {
-  try {
-    return JSON.parse(localStorage.getItem(key) || fallback);
-  } catch (error) {
-    return JSON.parse(fallback);
-  }
+const getCurrentUser = () => currentUser;
+const setCurrentUser = user => {
+  currentUser = user;
 };
 
-const writeJSON = (key, value) => localStorage.setItem(key, JSON.stringify(value));
-
-const getStoredAccounts = () => readJSON(STORAGE_KEY, '[]');
-const saveStoredAccounts = accounts => writeJSON(STORAGE_KEY, accounts);
-const getCurrentUser = () => readJSON(CURRENT_USER_KEY, 'null');
-const setCurrentUser = user => {
-  if (!user) {
-    localStorage.removeItem(CURRENT_USER_KEY);
-    return;
+const request = async (path, options = {}) => {
+  let response;
+  try {
+    response = await fetch(`/api/${path}`, {
+      ...options,
+      headers: {
+        ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+        ...options.headers
+      },
+      credentials: 'same-origin'
+    });
+  } catch {
+    throw new Error('Server nie je dostupný. Spustite aplikáciu cez python server.py.');
   }
-  writeJSON(CURRENT_USER_KEY, user);
+
+  let result;
+  try {
+    result = await response.json();
+  } catch {
+    throw new Error('Server nie je dostupný. Spustite aplikáciu cez python server.py.');
+  }
+
+  if (!response.ok) {
+    throw new Error(result.error || 'Požiadavku sa nepodarilo spracovať.');
+  }
+
+  return result;
 };
 
 const authApi = {
   async register(payload) {
-    const accounts = getStoredAccounts();
-    const email = payload.email.trim().toLowerCase();
-    const duplicate = accounts.some(account => account.email === email);
-
-    if (duplicate) {
-      throw new Error('Účet s touto e-mailovou adresou už existuje.');
-    }
-
-    const newUser = {
-      id: Date.now(),
-      name: payload.name.trim(),
-      email,
-      password: payload.password,
-      role: payload.role || 'tenant'
-    };
-
-    accounts.push(newUser);
-    saveStoredAccounts(accounts);
-    setCurrentUser(newUser);
-    return newUser;
+    const result = await request('register', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    setCurrentUser(result.user);
+    return result.user;
   },
 
   async login(payload) {
-    const accounts = getStoredAccounts();
-    const email = payload.email.trim().toLowerCase();
-    const match = accounts.find(account =>
-      account.email === email &&
-      account.password === payload.password &&
-      account.role === (payload.role || account.role)
-    );
-
-    if (!match) {
-      throw new Error('Nesprávny e-mail, heslo alebo typ účtu.');
-    }
-
-    setCurrentUser(match);
-    return match;
+    const result = await request('login', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    setCurrentUser(result.user);
+    return result.user;
   },
 
   async logout() {
+    await request('logout', { method: 'POST' });
     setCurrentUser(null);
+  },
+
+  async updateProfile(payload) {
+    const result = await request('profile', {
+      method: 'PATCH',
+      body: JSON.stringify(payload)
+    });
+    setCurrentUser(result.user);
+    return result.user;
   }
 };
 
@@ -78,6 +78,7 @@ const authSubmit = $('#authSubmit');
 const authTabs = $$('.auth-tab');
 const authNameField = $('#nameField');
 const authEmail = $('#authEmail');
+const authPassword = $('#authPassword');
 const authRole = $('#authRole');
 const accountButton = $('#accountButton');
 const logoutButton = $('#logoutButton');
@@ -92,6 +93,12 @@ const profilePasswordInput = $('#profilePasswordInput');
 const profileRoleInput = $('#profileRoleInput');
 
 let authMode = 'login';
+const sessionReady = request('me')
+  .then(result => setCurrentUser(result.user))
+  .catch(error => {
+    console.error(error);
+    if (authMessage) setAuthMessage('Účet sa nepodarilo načítať. Skontrolujte, či je server spustený.', 'error');
+  });
 
 const setAuthMessage = (message = '', type = '') => {
   if (!authMessage) return;
@@ -142,6 +149,11 @@ const setAuthTab = mode => {
   authTabs.forEach(tab => tab.classList.toggle('active', tab.dataset.authTab === mode));
   const isRegister = mode === 'register';
   if (authNameField) authNameField.classList.toggle('hidden', !isRegister);
+  if (authPassword) authPassword.autocomplete = isRegister ? 'new-password' : 'current-password';
+  if (authPassword) {
+    authPassword.minLength = isRegister ? 8 : 0;
+    authPassword.placeholder = isRegister ? 'Aspoň 8 znakov' : '********';
+  }
   if (authSubmit) authSubmit.textContent = isRegister ? 'Vytvoriť účet' : 'Prihlásiť sa';
   if (authRole) authRole.value = document.body.dataset.mode || 'tenant';
   setAuthMessage();
@@ -174,6 +186,10 @@ const handleAuthSubmit = async event => {
     setAuthMessage('Vyplňte všetky povinné polia.', 'error');
     return;
   }
+  if (authMode === 'register' && password.length < 8) {
+    setAuthMessage('Heslo musí mať aspoň 8 znakov.', 'error');
+    return;
+  }
 
   authEmail.value = email;
   if (!authEmail.checkValidity()) {
@@ -194,7 +210,7 @@ const handleAuthSubmit = async event => {
   }
 };
 
-const handleProfileUpdate = event => {
+const handleProfileUpdate = async event => {
   event.preventDefault();
 
   const currentUser = getCurrentUser();
@@ -203,16 +219,9 @@ const handleProfileUpdate = event => {
     return;
   }
 
-  const accounts = getStoredAccounts();
-  const index = accounts.findIndex(account => account.email === currentUser.email);
-  if (index === -1) {
-    setProfileSettingsMessage('Aktuálny účet sa nepodarilo nájsť.', 'error');
-    return;
-  }
-
   const nextName = (profileNameInput.value || '').trim();
   const nextEmail = (profileEmailInput.value || '').trim().toLowerCase();
-  const nextPassword = (profilePasswordInput.value || '').trim();
+  const nextPassword = profilePasswordInput.value || '';
   const nextRole = (profileRoleInput.value || currentUser.role || 'tenant');
 
   if (!nextName || !nextEmail) {
@@ -226,26 +235,20 @@ const handleProfileUpdate = event => {
     return;
   }
 
-  const duplicate = accounts.some(account => account.email === nextEmail && account.email !== currentUser.email);
-  if (duplicate) {
-    setProfileSettingsMessage('Túto e-mailovú adresu už používa iný účet.', 'error');
-    return;
+  try {
+    const updatedUser = await authApi.updateProfile({
+      name: nextName,
+      email: nextEmail,
+      password: nextPassword,
+      role: nextRole
+    });
+    syncModeButtons(updatedUser.role);
+    updateAccountMenu();
+    if (profilePasswordInput) profilePasswordInput.value = '';
+    setProfileSettingsMessage('Profil bol úspešne aktualizovaný.', 'success');
+  } catch (error) {
+    setProfileSettingsMessage(error.message, 'error');
   }
-
-  const updatedUser = {
-    ...currentUser,
-    name: nextName,
-    email: nextEmail,
-    password: nextPassword || currentUser.password,
-    role: nextRole
-  };
-
-  accounts[index] = updatedUser;
-  saveStoredAccounts(accounts);
-  setCurrentUser(updatedUser);
-  syncModeButtons(updatedUser.role);
-  updateAccountMenu();
-  setProfileSettingsMessage('Profil bol úspešne aktualizovaný.', 'success');
 };
 
 const populateProfileForm = () => {
@@ -269,19 +272,25 @@ const populateProfileForm = () => {
 
 const initModeSwitch = () => {
   document.querySelectorAll('.pill button').forEach(button => {
-    button.addEventListener('click', () => {
+    button.addEventListener('click', async () => {
       const nextMode = button.dataset.mode;
+      const user = getCurrentUser();
+      const previousMode = document.body.dataset.mode || 'tenant';
       syncModeButtons(nextMode);
 
-      const user = getCurrentUser();
       if (user) {
-        const accounts = getStoredAccounts();
-        const index = accounts.findIndex(account => account.email === user.email);
-        if (index >= 0) {
-          const updatedUser = { ...accounts[index], role: nextMode };
-          accounts[index] = updatedUser;
-          saveStoredAccounts(accounts);
-          setCurrentUser(updatedUser);
+        try {
+          await authApi.updateProfile({ role: nextMode });
+        } catch (error) {
+          syncModeButtons(previousMode);
+          if (profileSettingsMessage) {
+            setProfileSettingsMessage(error.message, 'error');
+          } else if (authMessage) {
+            setAuthMessage(error.message, 'error');
+          } else {
+            window.alert(error.message);
+          }
+          return;
         }
       }
 
@@ -502,7 +511,8 @@ const calc = () => {
 };
 
 if (accountButton) {
-  accountButton.addEventListener('click', () => {
+  accountButton.addEventListener('click', async () => {
+    await sessionReady;
     if (!getCurrentUser()) {
       openAuthModal();
     }
@@ -511,10 +521,20 @@ if (accountButton) {
 
 if (logoutButton) {
   logoutButton.addEventListener('click', async () => {
-    await authApi.logout();
-    updateAccountMenu();
-    if (window.location.pathname.endsWith('profile.html')) {
-      window.location.href = 'index.html';
+    try {
+      await authApi.logout();
+      updateAccountMenu();
+      if (window.location.pathname.endsWith('profile.html')) {
+        window.location.href = 'index.html';
+      }
+    } catch (error) {
+      if (authMessage) {
+        setAuthMessage(error.message, 'error');
+      } else if (profileSettingsMessage) {
+        setProfileSettingsMessage(error.message, 'error');
+      } else {
+        window.alert(error.message);
+      }
     }
   });
 }
@@ -531,7 +551,6 @@ if (authForm) {
 
 if (profileSettingsForm) {
   profileSettingsForm.addEventListener('submit', handleProfileUpdate);
-  populateProfileForm();
 }
 
 if (authModal) {
@@ -545,8 +564,10 @@ if (profileSettingsForm) {
   setProfileSettingsMessage();
 }
 
-const initUi = () => {
-  syncModeButtons(document.body.dataset.mode || 'tenant');
+const initUi = async () => {
+  await sessionReady;
+  const user = getCurrentUser();
+  syncModeButtons(user ? user.role : document.body.dataset.mode || 'tenant');
   initModeSwitch();
   renderListings();
   renderLandlordProfiles();
@@ -556,7 +577,11 @@ const initUi = () => {
     input.addEventListener('input', calc);
   });
   updateAccountMenu();
+  populateProfileForm();
   if (authForm) setAuthTab('login');
 };
 
-initUi();
+initUi().catch(error => {
+  console.error(error);
+  if (authMessage) setAuthMessage('Stránku sa nepodarilo inicializovať.', 'error');
+});
