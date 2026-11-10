@@ -1,0 +1,238 @@
+:root{
+  --bg:#141716; --ink:#dfe6ea; --gold:#ffe08a; --card:#625d57;
+  --pill:#262626; --field:#383634; --muted:#ddd7cf; --line:rgba(255,255,255,.12);
+  --trust-green:#5c9b42; --trust-surface:#e8eee7; --trust-ink:#202a20;
+  --serif:"Source Serif 4",Georgia,serif; --sans:Inter,system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+
+/* ---- mode switch: everything marked tenant-only / landlord-only toggles ---- */
+body[data-mode="tenant"] .landlord-only,
+body[data-mode="landlord"] .tenant-only{display:none}
+
+/* ---- auth modal ---- */
+.hidden{display:none !important}
+.auth-modal{
+  position:fixed; inset:0; z-index:40; display:grid; place-items:center;
+  background:rgba(10,12,12,.7); backdrop-filter:blur(6px); padding:24px;
+}
+.auth-card{
+  position:relative; width:min(520px,100%); background:rgba(31,33,32,.96);
+  border:1px solid var(--line); border-radius:28px; padding:28px 24px 20px; box-shadow:0 24px 60px rgba(0,0,0,.45);
+}
+.close-auth{
+  position:absolute; top:14px; right:14px; width:36px; height:36px; border-radius:50%; border:0;
+  background:#2a2d2c; color:var(--ink); cursor:pointer; font-size:1.4rem; line-height:1;
+}
+.auth-tabs{display:flex;gap:8px; margin-bottom:20px; background:#1d1f1f; border-radius:999px; padding:6px}
+.auth-tab{flex:1; border:0; background:transparent; color:var(--muted); border-radius:999px; padding:10px 16px; cursor:pointer; font:600 0.95rem var(--sans)}
+.auth-tab.active{background:#3a3937; color:var(--gold)}
+.auth-form{display:grid; gap:16px}
+.field-row{display:grid; gap:8px}
+.field-row label{font-size:.86rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em}
+.field-row input, .field-row select{
+  width:100%; background:var(--field); color:var(--ink); border:1px solid rgba(255,255,255,.08);
+  border-radius:14px; padding:14px 16px; font:400 1rem var(--sans)
+}
+.auth-submit{
+  margin-top:8px; border:0; border-radius:999px; padding:14px 18px; font:600 1rem var(--sans);
+  background:linear-gradient(135deg,#ffe08a,#d4b35a); color:#181818; cursor:pointer
+}
+.auth-message{min-height:22px; margin-top:12px; font-size:.94rem; color:var(--gold)}
+.auth-message.error{color:#ffb4b4}
+.auth-message.success{color:#b9f0c5}
+
+/* ---- profile settings page ---- */
+.profile-page{padding-top:140px; min-height:100vh}
+.profile-page-inner{max-width:760px; margin:0 auto; padding:0 20px}
+.profile-page-card{background:rgba(31,33,32,.96); border:1px solid var(--line); border-radius:28px; padding:28px; box-shadow:0 24px 60px rgba(0,0,0,.35)}
+.profile-page-header{display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:24px}
+.profile-page-header h1{font:400 2.2rem var(--serif); color:var(--gold)}
+.back-link{color:var(--ink); text-decoration:none; opacity:.8}
+.profile-settings-form{display:grid; gap:18px}
+.profile-settings-form .field-row input,
+.profile-settings-form .field-row select{background:#1d1f1f}
+.profile-settings-actions{display:flex; justify-content:flex-end; gap:12px; margin-top:8px}
+.secondary-btn{background:#2a2d2c; color:var(--ink); border:1px solid var(--line); padding:12px 18px; border-radius:999px; text-decoration:none; font:600 .95rem var(--sans)}
+
+/* ---- layout helpers ---- */
+section{padding:72px 0}
+.wrap{max-width:1400px;margin:0 auto;padding:0 40px}
+h2{font:400 clamp(2rem,3.4vw,3.2rem)/1.15 var(--serif);text-align:center;margin-bottom:40px}
+h2.gold{color:var(--gold)}
+h3.sub{font:400 1.25rem var(--serif);margin:56px 0 24px}
+.grid{display:grid;gap:24px}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+
+/* ---- top navigation ---- */
+.nav{position:fixed;inset:16px 24px auto;display:flex;justify-content:space-between;align-items:center;z-index:10}
+.circle{width:60px;height:60px;border-radius:50%;display:grid;place-items:center;border:0;cursor:pointer;
+  color:var(--ink);background:linear-gradient(145deg,#3a3a39,#1f2120);box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.circle svg{width:26px;height:26px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round}
+.logo{color:var(--gold);cursor:default}
+.logo svg{width:30px;height:30px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.logo[href]{cursor:pointer}
+.icons{display:flex;align-items:center;gap:12px}
+.profile-menu-wrap{position:relative;display:flex;align-items:center}
+.account-button{
+  width:60px; height:60px; border-radius:50%; display:grid; place-items:center; padding:0;
+  background:linear-gradient(145deg,#3a3a39,#1f2120); color:var(--ink); border:1px solid rgba(255,255,255,.08); cursor:pointer;
+}
+.account-button svg{width:22px; height:22px; flex-shrink:0}
+.profile-menu{
+  position:absolute; top:calc(100% + 10px); right:0; min-width:220px; background:rgba(31,33,32,.98); border:1px solid var(--line); border-radius:18px; padding:12px; box-shadow:0 18px 40px rgba(0,0,0,.28); opacity:0; transform:translateY(-6px); pointer-events:none; transition:opacity .18s ease, transform .18s ease; display:none;
+}
+.profile-menu-wrap:hover .profile-menu,
+.profile-menu-wrap:focus-within .profile-menu,
+.profile-menu.visible{display:block; opacity:1; transform:translateY(0); pointer-events:auto}
+.profile-menu-user{padding:10px 12px 12px; color:var(--gold); font-weight:600; border-bottom:1px solid var(--line); margin-bottom:8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.profile-menu-item{
+  display:block; width:100%; text-align:left; background:none; border:0; color:var(--ink); text-decoration:none; padding:10px 12px; border-radius:12px; cursor:pointer; font:500 .95rem var(--sans); transition:background .15s ease;
+}
+.profile-menu-item:hover{background:rgba(255,255,255,.04)}
+.profile-menu-item.danger{color:#ffb4b4}
+.pill{display:flex;gap:6px;padding:6px;background:var(--pill);border-radius:999px;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.pill button{border:0;background:none;color:var(--ink);font:400 1.15rem var(--serif);padding:12px 44px;border-radius:999px;cursor:pointer}
+.pill button.active{background:#3a3937;color:var(--gold)}
+
+/* ---- hero (put your photos in /images, see README note) ---- */
+.hero{height:100vh;min-height:600px;display:flex;align-items:center;padding:0 7vw;background:#1b1a18 center/cover no-repeat}
+.hero h1{font:400 clamp(2.6rem,5vw,5rem)/1.25 var(--serif)}
+.hero h1 em{display:block;color:var(--gold);font-style:italic}
+.hero.tenant{background-image:linear-gradient(90deg,var(--bg) 0,rgba(20,23,22,.8) 38%,rgba(20,23,22,0) 100%),url("https://plus.unsplash.com/premium_photo-1736194027680-bb88156ee144?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D")}
+.hero.landlord{justify-content:flex-end;text-align:right;
+  background-image:linear-gradient(270deg,var(--bg) 0,rgba(20,23,22,.8) 38%,rgba(20,23,22,0) 100%),url("https://plus.unsplash.com/premium_photo-1736194027680-bb88156ee144?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D")}
+
+/* ---- "Prečo my?" ---- */
+.why{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:28px;min-height:260px}
+.why h3{font:600 1.3rem/1.25 var(--sans);margin-bottom:14px;color:#e8e3dc}
+.why p{color:var(--muted)}
+
+/* ---- reviews ---- */
+.review{background:var(--card);border-radius:28px;min-height:260px;padding:32px}
+.review .stars{color:var(--gold);letter-spacing:4px;margin-bottom:12px}
+.review h4{font:400 1.3rem var(--serif);margin-bottom:8px}
+.review p,.review small{color:var(--muted)}
+
+/* ---- search bar / calculator bar ---- */
+.bar{display:flex;gap:12px;padding:12px;background:#1f2120;border-radius:999px;box-shadow:0 6px 24px rgba(0,0,0,.35)}
+.bar input,.bar select{flex:1;min-width:0;background:var(--field);color:var(--ink);border:0;border-radius:999px;
+  padding:18px 28px;font:400 1.1rem var(--serif);appearance:none}
+.bar .grow{flex:2}
+.bar ::placeholder{color:#8e8a85}
+.bar select:invalid{color:#8e8a85}
+
+/* ---- listing cards ---- */
+.listing{position:relative;overflow:hidden;background:var(--card);border:1px solid var(--line);border-radius:28px 28px 14px 14px;aspect-ratio:3/4;
+  padding:20px;display:flex;flex-direction:column;justify-content:flex-end}
+.listing img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.listing::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.8))}
+.listing h4,.listing p,.listing-location,.listing-price{position:relative;z-index:1}
+.listing{color:inherit;text-decoration:none;transition:transform .2s ease,border-color .2s ease}
+.listing:hover{transform:translateY(-4px);border-color:rgba(255,224,138,.65)}
+.listing-location{font-size:.82rem;color:#eee;margin-bottom:6px}
+.listing h4{font:400 1.15rem var(--serif)}
+.listing p{color:#eee;font-size:.95rem}
+.listing-price{margin-top:8px;color:var(--gold);font-size:1.05rem}
+.tenant-only .listings{grid-template-columns:minmax(0,1fr);gap:18px}
+.tenant-only .listing{aspect-ratio:auto;min-height:220px;padding:20px 20px 20px 0;display:grid;grid-template-columns:minmax(180px,27%) minmax(0,1fr) 230px;grid-template-rows:auto auto auto auto auto;align-content:center;justify-content:stretch;gap:4px 24px;border-radius:14px}
+.tenant-only .listing::after{display:none}
+.tenant-only .listing img{position:relative;grid-column:1;grid-row:1/6;width:100%;height:100%;min-height:200px;border-radius:12px;z-index:1}
+.tenant-only .listing-location,.tenant-only .listing h4,.tenant-only .listing p,.tenant-only .listing-price,.tenant-only .listing-costs{grid-column:2;align-self:end;color:var(--ink)}
+.tenant-only .listing-location{color:var(--muted);margin:0}
+.tenant-only .listing h4{font-size:1.35rem;line-height:1.25}
+.tenant-only .listing p{color:var(--muted)}
+.tenant-only .listing-price{align-self:start;margin:5px 0 0;color:var(--gold);font-size:1.2rem}
+.tenant-only .listing-costs{align-self:start;color:var(--muted);font-size:.88rem}
+.landlord-trust{background:var(--trust-surface);color:var(--trust-ink);border-radius:10px;padding:14px 16px}
+.tenant-only .listing .landlord-trust{grid-column:3;grid-row:1/6;align-self:stretch;display:flex;flex-direction:column;justify-content:center;gap:9px}
+.landlord-identity{display:flex;align-items:center;gap:10px;min-width:0}
+.landlord-avatar{width:38px;height:38px;flex:0 0 38px;display:grid;place-items:center;border-radius:50%;background:#c9dfbd;color:#315b26;font-size:.78rem;font-weight:600}
+.landlord-name{display:grid;min-width:0;line-height:1.25}
+.landlord-label{color:#64715f;font-size:.7rem}
+.landlord-name strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.9rem}
+.landlord-verified{color:#467e36;font-size:.72rem}
+.landlord-verified::before{content:"✓ ";font-weight:700}
+.trust-score-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;color:#34432f;font:600 .85rem var(--serif)}
+.trust-score-row strong{color:var(--trust-green);font:500 1.15rem var(--serif)}
+.trust-score-row small{font-size:.75rem}
+.trust-meter{height:6px;overflow:hidden;border-radius:999px;background:#fff}
+.trust-meter span{display:block;height:100%;border-radius:inherit;background:var(--trust-green)}
+.landlord-stats{display:flex;justify-content:space-between;gap:8px;padding-top:8px;border-top:1px solid rgba(49,83,41,.16);color:#52604d;font-size:.68rem}
+.landlord-stats strong{color:#31472a;font-size:.8rem}
+.landlord-trust-profiles .landlord-trust{height:100%;min-height:230px;display:flex;flex-direction:column;justify-content:center;gap:14px;padding:20px}
+.landlord-trust-profiles .landlord-stats{display:grid;gap:6px}
+.property-detail > .landlord-trust{display:grid;grid-template-columns:minmax(220px,1.1fr) minmax(180px,1fr) minmax(230px,1fr);grid-template-rows:auto auto;align-items:center;gap:5px 28px;padding:18px 24px;margin-bottom:24px}
+.property-detail > .landlord-trust .landlord-identity{grid-column:1;grid-row:1/3}
+.property-detail > .landlord-trust .trust-score-row{grid-column:2;grid-row:1}
+.property-detail > .landlord-trust .trust-meter{grid-column:2;grid-row:2}
+.property-detail > .landlord-trust .landlord-stats{grid-column:3;grid-row:1/3;display:grid;gap:8px;border-top:0;border-left:1px solid rgba(49,83,41,.16);padding:0 0 0 22px;font-size:.78rem}
+
+/* ---- rental property detail page ---- */
+.property-page{min-height:100vh;padding-top:132px;padding-bottom:72px}
+.property-nav-back{color:var(--ink);text-decoration:none;font-size:.95rem}
+.property-nav-back:hover,.property-back:hover{text-decoration:underline;text-underline-offset:4px}
+.property-detail{max-width:1160px}
+.property-heading{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:28px}
+.property-location{color:var(--gold);font-size:.9rem;margin-bottom:8px}
+.property-heading h1,.property-not-found h1{font:400 clamp(2rem,4vw,3.2rem)/1.15 var(--serif);max-width:760px}
+.property-price{white-space:nowrap;color:var(--gold);font:600 1.8rem var(--sans)}
+.property-price span{font:400 1rem var(--sans);color:var(--muted)}
+.property-gallery{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:12px;min-height:440px;max-height:560px}
+.property-main-image{width:100%;height:100%;min-height:440px;max-height:560px;object-fit:cover;border-radius:10px}
+.property-thumbnails{display:grid;grid-template-rows:repeat(3,minmax(0,1fr));gap:12px}
+.property-thumbnail{padding:0;min-height:0;overflow:hidden;border:2px solid transparent;border-radius:8px;background:#222;cursor:pointer}
+.property-thumbnail.active{border-color:var(--gold)}
+.property-thumbnail img{width:100%;height:100%;object-fit:cover;display:block}
+.property-content{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(320px,.9fr);gap:64px;margin:48px 0 32px}
+.property-description h2,.property-facts h2{font:400 1.65rem var(--serif);text-align:left;margin:0 0 18px;color:var(--gold)}
+.property-description p{max-width:680px;color:var(--muted);font-size:1.05rem}
+.property-description h3{font:600 1rem var(--sans);margin:28px 0 12px}
+.property-features{display:flex;flex-wrap:wrap;gap:9px 22px;padding:0;list-style:none;color:var(--muted)}
+.property-features li::before{content:"✓";color:var(--gold);margin-right:8px}
+.property-facts dl{margin:0}
+.property-facts dl div{display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid var(--line)}
+.property-facts dt{color:var(--muted)}
+.property-facts dd{text-align:right;font-weight:500}
+.property-back{display:inline-block;margin-top:8px;color:var(--ink);text-decoration:none}
+.property-not-found{min-height:50vh;display:grid;align-content:center;justify-items:start;gap:20px}
+
+/* ---- calculator result ---- */
+.result{text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:10px;margin:56px 0 20px}
+#result{text-align:center;font:400 1.5rem var(--serif)}
+
+@media (max-width:900px){
+  .g4{grid-template-columns:repeat(2,1fr)} .g3{grid-template-columns:1fr}
+  .bar{flex-wrap:wrap;border-radius:28px} .pill button{padding:10px 20px}
+  .profile-grid{grid-template-columns:1fr}
+  .wrap{padding:0 20px}
+  .property-content{grid-template-columns:1fr;gap:36px}
+  .property-gallery{grid-template-columns:minmax(0,1fr) 110px}
+  .tenant-only .listing{grid-template-columns:minmax(145px,26%) minmax(0,1fr) 195px;gap:4px 16px}
+  .tenant-only .listing .landlord-trust{padding:12px}
+  .property-detail > .landlord-trust{grid-template-columns:minmax(180px,1fr) minmax(160px,1fr);gap:10px 20px}
+  .property-detail > .landlord-trust .landlord-stats{grid-column:1/3;grid-row:3;display:flex;border-top:1px solid rgba(49,83,41,.16);border-left:0;padding:10px 0 0}
+}
+
+@media (max-width:600px){
+  .landlord-trust-profiles{grid-template-columns:minmax(0,1fr)}
+  .tenant-only .listing{grid-template-columns:minmax(0,1fr);grid-template-rows:auto;gap:5px;padding:0 0 18px}
+  .tenant-only .listing img{grid-column:1;grid-row:auto;aspect-ratio:16/9;min-height:0;height:auto;border-radius:12px 12px 0 0;margin-bottom:10px}
+  .tenant-only .listing-location,.tenant-only .listing h4,.tenant-only .listing p,.tenant-only .listing-price,.tenant-only .listing-costs{grid-column:1;margin-left:18px;margin-right:18px}
+  .tenant-only .listing .landlord-trust{grid-column:1;grid-row:auto;margin:10px 18px 0}
+  .property-detail > .landlord-trust{grid-template-columns:minmax(0,1fr);gap:10px;padding:16px}
+  .property-detail > .landlord-trust .landlord-identity,.property-detail > .landlord-trust .trust-score-row,.property-detail > .landlord-trust .trust-meter,.property-detail > .landlord-trust .landlord-stats{grid-column:1;grid-row:auto}
+  .property-detail > .landlord-trust .landlord-stats{display:flex}
+  .property-page{padding-top:108px}
+  .property-heading{align-items:start;flex-direction:column;gap:12px}
+  .property-price{font-size:1.5rem}
+  .property-gallery{display:flex;flex-direction:column;max-height:none;min-height:0}
+  .property-main-image{min-height:0;aspect-ratio:4/3}
+  .property-thumbnails{grid-template-columns:repeat(3,1fr);grid-template-rows:82px}
+  .property-content{margin-top:32px}
+  .property-facts dl div{align-items:start}
+}

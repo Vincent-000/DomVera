@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nastavenia profilu - Prenájom bez vrások</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="profile" data-mode="tenant">
+  <nav class="nav">
+    <a href="index.html" class="circle logo" aria-label="Späť na hlavnú stránku" title="Späť na hlavnú stránku">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 14 16 4l12 10M8 12.5V27h16V12.5M13 27v-8h6v8"/><circle cx="16" cy="15" r="1"/><path d="M16 16v2"/></svg>
+    </a>
+    <div class="pill">
+      <button data-mode="tenant" class="active" type="button">Nájomca</button>
+      <button data-mode="landlord" type="button">Prenajímateľ</button>
+    </div>
+    <div class="icons">
+      <div class="profile-menu-wrap">
+        <button id="accountButton" class="circle account-button" aria-label="Profil" type="button">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+        </button>
+        <div id="profileMenu" class="profile-menu" role="menu" aria-label="Profil menu">
+          <div id="loggedUserName" class="profile-menu-user">Nie ste prihlásený</div>
+          <a id="settingsLink" href="profile.html" class="profile-menu-item">Nastavenia</a>
+          <button id="logoutButton" type="button" class="profile-menu-item danger">Odhlásiť sa</button>
+        </div>
+      </div>
+      <button class="circle" aria-label="Hľadať nehnuteľnosti" type="button"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+    </div>
+  </nav>
+
+  <main class="profile-page">
+    <div class="profile-page-inner">
+      <div class="profile-page-card">
+        <div class="profile-page-header">
+          <h1>Nastavenia profilu</h1>
+          <a class="back-link" href="index.html">← Späť na hlavnú stránku</a>
+        </div>
+
+        <form id="profileSettingsForm" class="profile-settings-form" novalidate>
+          <div class="field-row">
+            <label for="profileNameInput">Meno</label>
+            <input id="profileNameInput" name="name" type="text" placeholder="Vaše meno" autocomplete="name" required>
+          </div>
+
+          <div class="field-row">
+            <label for="profileEmailInput">E-mail</label>
+            <input id="profileEmailInput" name="email" type="email" pattern="[^@\s]+@[^@\s]+\.[^@\s]+" title="Zadajte platnú e-mailovú adresu, napríklad meno@domena.sk" placeholder="vas@email.com" autocomplete="email" required>
+          </div>
+
+          <div class="field-row">
+            <label for="profilePasswordInput">Nové heslo</label>
+            <input id="profilePasswordInput" name="password" type="password" placeholder="Ak heslo nemeníte, nechajte pole prázdne" autocomplete="new-password">
+          </div>
+
+          <div class="field-row">
+            <label for="profileRoleInput">Typ účtu</label>
+            <select id="profileRoleInput" name="role">
+              <option value="tenant">Nájomca</option>
+              <option value="landlord">Prenajímateľ</option>
+            </select>
+          </div>
+
+          <div class="profile-settings-actions">
+            <a class="secondary-btn" href="index.html">Zrušiť</a>
+            <button class="auth-submit" type="submit">Uložiť zmeny</button>
+          </div>
+
+          <p id="profileSettingsMessage" class="auth-message" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

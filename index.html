@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prenájom bez vrások</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-mode="tenant">
+
+<nav class="nav">
+  <div class="circle logo" role="img" aria-label="Logo spoločnosti s motívom domu a kľúča">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 14 16 4l12 10M8 12.5V27h16V12.5M13 27v-8h6v8"/><circle cx="16" cy="15" r="1"/><path d="M16 16v2"/></svg>
+  </div>
+  <div class="pill">
+    <button data-mode="tenant" class="active">Nájomca</button>
+    <button data-mode="landlord">Prenajímateľ</button>
+  </div>
+  <div class="icons">
+    <div class="profile-menu-wrap">
+      <button id="accountButton" class="circle account-button" aria-label="Profil" type="button">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+      </button>
+      <div id="profileMenu" class="profile-menu" role="menu" aria-label="Profil menu">
+        <div id="loggedUserName" class="profile-menu-user">Nie ste prihlásený</div>
+        <a id="settingsLink" href="profile.html" class="profile-menu-item">Nastavenia</a>
+        <button id="logoutButton" type="button" class="profile-menu-item danger">Odhlásiť sa</button>
+      </div>
+    </div>
+    <button class="circle" aria-label="Hľadať nehnuteľnosti"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+  </div>
+</nav>
+
+<div id="authModal" class="auth-modal hidden" aria-hidden="true">
+  <div class="auth-card" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+    <button id="closeAuth" class="close-auth" type="button" aria-label="Zavrieť">×</button>
+    <h2 id="authTitle" class="gold" style="margin-bottom:18px;">Váš účet</h2>
+    <div class="auth-tabs" aria-label="Prepínač prihlásenia a registrácie">
+      <button class="auth-tab active" data-auth-tab="login" type="button">Prihlásenie</button>
+      <button class="auth-tab" data-auth-tab="register" type="button">Vytvoriť účet</button>
+    </div>
+
+    <form id="authForm" class="auth-form" novalidate>
+      <div id="nameField" class="field-row hidden">
+        <label for="authName">Meno</label>
+        <input id="authName" name="name" type="text" placeholder="Vložte svoje meno" autocomplete="name">
+      </div>
+
+      <div class="field-row">
+        <label for="authEmail">E-mail</label>
+        <input id="authEmail" name="email" type="email" pattern="[^@\s]+@[^@\s]+\.[^@\s]+" title="Zadajte platnú e-mailovú adresu, napríklad meno@domena.sk" placeholder="vas@email.com" autocomplete="email" required>
+      </div>
+
+      <div class="field-row">
+        <label for="authPassword">Heslo</label>
+        <input id="authPassword" name="password" type="password" placeholder="********" autocomplete="current-password" required>
+      </div>
+
+      <div class="field-row">
+        <label for="authRole">Typ účtu</label>
+        <select id="authRole" name="role">
+          <option value="tenant">Nájomca</option>
+          <option value="landlord">Prenajímateľ</option>
+        </select>
+      </div>
+
+      <button id="authSubmit" class="auth-submit" type="submit">Prihlásiť sa</button>
+    </form>
+
+    <p id="authMessage" class="auth-message" aria-live="polite"></p>
+  </div>
+</div>
+
+<header class="hero tenant tenant-only"><h1>My hľadáme,<em>Vy bývate.</em></h1></header>
+<header class="hero landlord landlord-only"><h1>Nájomca bez<em>vrások.</em></h1></header>
+
+<section><div class="wrap">
+  <h2 class="gold">Prečo my?</h2>
+  <div class="grid g4">
+    <article class="why"><h3>Všetky ponuky na jednom mieste</h3><p>Prehľadne si prezrite ponuky dlhodobých prenájmov z rôznych lokalít Slovenska.</p></article>
+    <article class="why"><h3>Vyhľadávanie podľa vašich predstáv</h3><p>Nastavte si cenu, lokalitu, počet izieb, veľkosť či ďalšie požiadavky.</p></article>
+    <article class="why"><h3>Ponuky, ktoré dávajú zmysel</h3><p>Objavujte nehnuteľnosti podľa lokality, vašich preferencií a možností.</p></article>
+    <article class="why"><h3>Jednoduchšia cesta k novému bývaniu</h3><p>Kontaktujte prenajímateľov priamo cez platformu a majte komunikáciu prehľadne na jednom mieste.</p></article>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <h2>Naši spokojní zákazníci</h2>
+  <div class="grid g3">
+    <article class="review"><div class="stars">★★★★★</div><h4>Konečne bez nekonečného hľadania</h4><p>Text recenzie…</p><small>Meno, mesto</small></article>
+    <article class="review"><div class="stars">★★★★★</div><h4>Nadpis recenzie</h4><p>Text recenzie…</p><small>Meno, mesto</small></article>
+    <article class="review"><div class="stars">★★★★★</div><h4>Nadpis recenzie</h4><p>Text recenzie…</p><small>Meno, mesto</small></article>
+  </div>
+</div></section>
+
+<!-- POHĽAD NÁJOMCU -->
+<section class="tenant-only"><div class="wrap">
+  <h2>Váš domov začína tu</h2>
+  <form class="bar" onsubmit="return false">
+    <input class="grow" placeholder="Mesto" aria-label="Mesto">
+    <select required aria-label="Byt alebo dom"><option value="" hidden>Byt/Dom</option><option>Byt</option><option>Dom</option></select>
+    <input placeholder="Cena od – do (€)" aria-label="Cena od – do">
+    <input placeholder="Izby" aria-label="Izby" inputmode="numeric">
+  </form>
+  <h3 class="sub">Pre vás</h3>
+  <div id="tenant-listings" class="grid g4 listings"></div>
+</div></section>
+
+<!-- POHĽAD PRENAJÍMATEĽA -->
+<section class="landlord-only"><div class="wrap">
+  <h2>Kalkulačka</h2>
+  <form class="bar calc" onsubmit="return false">
+    <input class="grow" placeholder="Mesto" aria-label="Mesto">
+    <select required aria-label="Byt alebo dom"><option value="" hidden>Byt/Dom</option><option>Byt</option><option>Dom</option></select>
+    <input id="costs" type="number" min="0" placeholder="Náklady (€)" aria-label="Náklady">
+    <input id="rooms" type="number" min="1" max="6" placeholder="Izby" aria-label="Izby">
+    <select id="state" required aria-label="Stav">
+      <option value="" hidden>Stav</option><option value="0.9">Pôvodný</option>
+      <option value="1">Čiastočná rekonštrukcia</option><option value="1.2">Novostavba / kompletná rekonštrukcia</option>
+    </select>
+  </form>
+  <h2 class="gold result">Výsledok</h2>
+  <p id="result"></p>
+  <h3 class="sub">Prenajímatelia s overeným skóre</h3>
+  <div id="landlordTrustProfiles" class="grid g4 landlord-trust-profiles"></div>
+</div></section>
+
+<script src="app.js"></script>
+</body>
+</html>
