@@ -1,6 +1,7 @@
 import hashlib
 import hmac
 import json
+import os
 import re
 import secrets
 import sqlite3
@@ -404,8 +405,9 @@ class AccountHandler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     initialize_database()
-    server = ThreadingHTTPServer(("127.0.0.1", 8000), AccountHandler)
-    print("Server is running at http://127.0.0.1:8000 (Ctrl+C to stop)")
+    port = int(os.environ.get("PORT", 8000))
+    server = ThreadingHTTPServer(("0.0.0.0", port), AccountHandler)
+    print(f"Server is running on port {port} (Ctrl+C to stop)")
     try:
         server.serve_forever()
     except KeyboardInterrupt:
