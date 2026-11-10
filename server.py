@@ -354,7 +354,9 @@ class AccountHandler(BaseHTTPRequestHandler):
         origin = self.headers.get("Origin")
         if not origin:
             return True
-        return origin == f"http://{self.headers.get('Host', '')}"
+        host = self.headers.get("X-Forwarded-Host") or self.headers.get("Host", "")
+        proto = self.headers.get("X-Forwarded-Proto", "https")
+        return origin == f"{proto}://{host}" or origin == f"http://{host}" or origin == f"https://{host}"
 
     @staticmethod
     def valid_name(value):
